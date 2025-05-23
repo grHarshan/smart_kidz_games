@@ -8,12 +8,12 @@ import 'game6.dart';
 
 class HomePage extends StatelessWidget {
   final List<Map<String, dynamic>> games = [
-    {'title': 'Game 1', 'color': Colors.pink, 'page': Game1()},
-    {'title': 'Game 2', 'color': Colors.orange, 'page': Game2()},
-    {'title': 'Game 3', 'color': Colors.green, 'page': Game3()},
-    {'title': 'Game 4', 'color': Colors.blue, 'page': Game4()},
-    {'title': 'Game 5', 'color': Colors.purple, 'page': Game5()},
-    {'title': 'Game 6', 'color': Colors.yellow, 'page': Game6()},
+    {'title': 'Game 1', 'color': Colors.yellow[200], 'page': Game1()},
+    {'title': 'Game 2', 'color': Colors.purple[300], 'page': Game2()},
+    {'title': 'Game 3', 'color': Colors.cyan[300], 'page': Game3()},
+    {'title': 'Game 4', 'color': Colors.pinkAccent[100], 'page': Game4()},
+    {'title': 'Game 5', 'color': Colors.lightGreenAccent[100], 'page': Game5()},
+    {'title': 'Game 6', 'color': Colors.orange[200], 'page': Game6()},
   ];
 
   @override
@@ -25,55 +25,59 @@ class HomePage extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/background.png'),
+                image: AssetImage('assets/images/H1.png'), // Updated image path
                 fit: BoxFit.cover,
               ),
             ),
           ),
-
-          // Grid with games
+          // Vertical List of Games
           Center(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(20),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 20,
-              ),
-              itemCount: games.length,
-              itemBuilder: (context, index) {
-                var game = games[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => game['page']));
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: game['color'],
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 5,
-                          offset: Offset(2, 4),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: games.map((game) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => game['page']),
+                        );
+                      },
+                      child: Container(
+                        width: 250,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: game['color'],
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 4,
+                              offset: Offset(2, 3),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        game['title'],
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          shadows: [Shadow(blurRadius: 2, color: Colors.black)],
+                        child: Center(
+                          child: Text(
+                            game['title'],
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              fontFamily: 'ComicSans', // optional
+                              shadows: [
+                                Shadow(blurRadius: 2, color: Colors.black),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                }).toList(),
+              ),
             ),
           ),
         ],
