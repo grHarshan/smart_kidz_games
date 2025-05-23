@@ -7,6 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mad_game/game4.dart';  // adjust path as needed
 
 import 'package:mad_game/main.dart';
 
@@ -26,5 +27,9 @@ void main() {
     // Verify that our counter has incremented.
     expect(find.text('0'), findsNothing);
     expect(find.text('1'), findsOneWidget);
+    // Verify draggable color texts exist
+    expect(find.text('ORANGE'), findsOneWidget);
+    expect(find.text('BLUE'), findsOneWidget);
+    expect(find.text('PINK'), findsOneWidget);
   });
 }
