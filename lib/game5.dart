@@ -2,15 +2,14 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 
-
-class PepperSortingGame extends StatefulWidget {
-  const PepperSortingGame({Key? key}) : super(key: key);
+class Game5 extends StatefulWidget {
+  const Game5({Key? key}) : super(key: key);
 
   @override
-  State<PepperSortingGame> createState() => _PepperSortingGameState();
+  State<Game5> createState() => _PepperSortingGameState();
 }
 
-class _PepperSortingGameState extends State<PepperSortingGame> {
+class _PepperSortingGameState extends State<Game5> {
   final List<Pepper> _peppers = [];
   int _score = 0;
   Timer? _gameTimer;
@@ -382,8 +381,8 @@ class _PepperSortingGameState extends State<PepperSortingGame> {
     return DragTarget<Pepper>(
       builder: (context, candidateData, rejectedData) {
         return Container(
-          width: isBig ? 100 : 85,
-          height: isBig ? 100 : 85,
+          width: isBig ? 100 : 75,
+          height: isBig ? 100 : 75,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
           ),
