@@ -7,14 +7,16 @@ import 'game5.dart';
 import 'game6.dart';
 
 class HomePage extends StatelessWidget {
-  final List<Map<String, dynamic>> games = [
-    {'title': 'Game 1', 'color': Colors.yellow[200], 'page': Game1()},
-    {'title': 'Game 2', 'color': Colors.purple[300], 'page': Game2()},
-    {'title': 'Game 3', 'color': Colors.cyan[300], 'page': Game3()},
-    {'title': 'Game 4', 'color': Colors.pinkAccent[100], 'page': Game4()},
-    {'title': 'Game 5', 'color': Colors.lightGreenAccent[100], 'page': Game5()},
-    {'title': 'Game 6', 'color': Colors.orange[200], 'page': Game6()},
+  static final List<Map<String, dynamic>> games = [
+    {'title': 'Game 1', 'color': Colors.yellow[200], 'page': const Game1()},
+    {'title': 'Game 2', 'color': Colors.purple[300], 'page': const Game2()},
+    {'title': 'Game 3', 'color': Colors.cyan[300], 'page': const Game3()},
+    {'title': 'Game 4', 'color': Colors.pinkAccent[100], 'page': const Game4()},
+    {'title': 'Game 5', 'color': Colors.lightGreenAccent[100], 'page': const Game5()},
+    {'title': 'Game 6', 'color': Colors.orange[200], 'page': const Game6()},
   ];
+
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {

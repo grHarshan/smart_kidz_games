@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 class Game4 extends StatelessWidget {
-  const Game4({Key? key}) : super(key: key);
+  const Game4({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +11,7 @@ class Game4 extends StatelessWidget {
 }
 
 class ShapeColorGame extends StatefulWidget {
-  const ShapeColorGame({Key? key}) : super(key: key);
+  const ShapeColorGame({super.key});
 
   @override
   State<ShapeColorGame> createState() => _ShapeColorGameState();
@@ -130,8 +130,8 @@ class _ShapeColorGameState extends State<ShapeColorGame> {
               ),
             );
           },
-          onWillAccept: (data) => true,
-          onAccept: (data) {
+          onWillAcceptWithDetails: (data) => true,
+          onAcceptWithDetails: (data) {
             if (data == correctAnswers[shape]) {
               setState(() {
                 score[shape] = true;
