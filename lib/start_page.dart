@@ -45,7 +45,7 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
     // Logo fade animation
     _logoFadeAnimation = Tween<double>(
       begin: 0.0,
-      end: 1.0,
+      end: 1.8,
     ).animate(CurvedAnimation(
       parent: _logoController,
       curve: const Interval(0.0, 0.8, curve: Curves.easeIn),
