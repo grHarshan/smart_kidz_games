@@ -111,7 +111,7 @@ class _PepperSortingGameState extends State<Game5> {
     setState(() {
       for (int i = _peppers.length - 1; i >= 0; i--) {
         final pepper = _peppers[i];
-        pepper.yPosition += 0.01;
+        pepper.yPosition += 0.005;
         if (pepper.yPosition > 1.0) {
           _peppers.removeAt(i);
           _score -= 5;
