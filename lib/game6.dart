@@ -125,6 +125,62 @@ class _Game6State extends State<Game6> {
           ),
           child: Column(
             children: [
+              // 🧠 Instruction Box
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.95),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5)],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 8),
+                      Text("Guess the word in $maxAttempts tries."),
+                      SizedBox(height: 6),
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(fontSize: 16, color: Colors.black),
+                          children: [
+                            WidgetSpan(
+                              child: Container(
+                                width: 16,
+                                height: 16,
+                                color: Colors.green,
+                                margin: EdgeInsets.only(right: 6),
+                              ),
+                            ),
+                            TextSpan(text: "Letter is correct and in the correct position.\n"),
+                            WidgetSpan(
+                              child: Container(
+                                width: 16,
+                                height: 16,
+                                color: Colors.yellow,
+                                margin: EdgeInsets.only(right: 6),
+                              ),
+                            ),
+                            TextSpan(text: "Letter is in the word but in the wrong position.\n"),
+                            WidgetSpan(
+                              child: Container(
+                                width: 16,
+                                height: 16,
+                                color: Colors.grey,
+                                margin: EdgeInsets.only(right: 6),
+                              ),
+                            ),
+                            TextSpan(text: "Letter is not in the word."),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Word Rows
               for (int i = 0; i < maxAttempts; i++)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -168,6 +224,7 @@ class _Game6State extends State<Game6> {
                     );
                   }),
                 ),
+
               SizedBox(height: 10),
               if (currentAttempt < maxAttempts && !isGameOver)
                 ElevatedButton(
@@ -181,47 +238,48 @@ class _Game6State extends State<Game6> {
                   child: Text("Submit"),
                 ),
               Spacer(),
-Text(
-  "Remaining Letters:",
-  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-),
-SizedBox(height: 8),
-Wrap(
-  alignment: WrapAlignment.center,
-  children: List.generate(26, (index) {
-    String letter = String.fromCharCode(index + 97);
 
-    if (letterColors[letter] == Colors.grey) {
-      return SizedBox.shrink();
-    }
+              // ⌨️ Remaining Letters
+              Text(
+                "Remaining Letters:",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Wrap(
+                alignment: WrapAlignment.center,
+                children: List.generate(26, (index) {
+                  String letter = String.fromCharCode(index + 97);
 
-    return GestureDetector(
-      onTap: () {
-        if (!guessedLetters.contains(letter) && !isGameOver) {
-          guessedLetters.add(letter);
-          setState(() {});
-        }
-      },
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
-        width: 40,
-        height: 40,
-        margin: EdgeInsets.all(4),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: getKeyboardButtonColor(letter),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.black),
-        ),
-        child: Text(
-          letter.toUpperCase(),
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }),
-),
+                  if (letterColors[letter] == Colors.grey) {
+                    return SizedBox.shrink();
+                  }
 
+                  return GestureDetector(
+                    onTap: () {
+                      if (!guessedLetters.contains(letter) && !isGameOver) {
+                        guessedLetters.add(letter);
+                        setState(() {});
+                      }
+                    },
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 300),
+                      width: 40,
+                      height: 40,
+                      margin: EdgeInsets.all(4),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: getKeyboardButtonColor(letter),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.black),
+                      ),
+                      child: Text(
+                        letter.toUpperCase(),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  );
+                }),
+              ),
               SizedBox(height: 20),
             ],
           ),
@@ -241,7 +299,6 @@ class VictoryScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Background with low opacity overlay
           Opacity(
             opacity: 0.5,
             child: Container(
