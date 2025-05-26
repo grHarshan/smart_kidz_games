@@ -1,4 +1,39 @@
-**/dgph
+# Build output
+build/
+.dart_tool/
+.pub-cache/
+
+# Android build artifacts
+android/.gradle/
+android/app/build/
+
+# iOS build artifacts
+ios/Pods/
+ios/build/
+ios/Runner.xcworkspace/
+
+# CMake and native build files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.ninja
+*.bin
+*.o
+*.so
+*.exe
+*.dll
+*.dSYM/
+
+# IDE-specific files
+*.iml
+.vscode/
+.idea/
+*.log
+
+# Misc
+*.tmp
+*.DS_Store**/dgph
 *.mode1v3
 *.mode2v3
 *.moved-aside

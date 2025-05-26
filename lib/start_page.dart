@@ -45,7 +45,7 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
     // Logo fade animation
     _logoFadeAnimation = Tween<double>(
       begin: 0.0,
-      end: 1.8,
+      end: 1.0,
     ).animate(CurvedAnimation(
       parent: _logoController,
       curve: const Interval(0.0, 0.8, curve: Curves.easeIn),
@@ -104,11 +104,18 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
                             height: 200,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
+                              // boxShadow: [
+                              // BoxShadow(
+                              // color: Colors.black.withOpacity(0.2),
+                              // blurRadius: 15,
+                              // offset: const Offset(0, 8),
+                              // ),
+                              // ],
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(20),
                               child: Image.asset(
-                                'assets/images/logo.png', //logo
+                                'assets/images/logo.png', // Your logo
                                 fit: BoxFit.contain,
                                 errorBuilder: (context, error, stackTrace) {
                                   // Fallback if logo doesn't load
