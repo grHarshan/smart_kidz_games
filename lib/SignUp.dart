@@ -1,72 +1,103 @@
 import 'package:flutter/material.dart';
+import 'login.dart'; // Make sure you have login.dart in the same folder
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class Signup extends StatefulWidget {
+  const Signup({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const SignUpScreen(),
-    );
-  }
+  State<Signup> createState() => _SignupState();
 }
 
-class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({super.key});
+class _SignupState extends State<Signup> {
+  // Controllers for each input
+  final TextEditingController parentNameController = TextEditingController();
+  final TextEditingController kidNameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>(); // Key for form validation
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
+        fit: StackFit.expand,
         children: [
-          Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFFB3F0F7), Color(0xFF91E842)],
-              ),
-            ),
+          // Background image
+          Image.asset(
+            'assets/Images/background.png',
+            fit: BoxFit.cover,
           ),
-          Positioned.fill(
-            child: Column(
-              children: [
-                const SizedBox(height: 60),
-                const Text(
-                  'SIGN IN HERE',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFFF7B1C),
-                    letterSpacing: 2,
-                  ),
-                ),
-                const SizedBox(height: 40),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        buildTextField('NAME'),
-                        const SizedBox(height: 20),
-                        buildTextField('PASSWORD', obscureText: true),
-                        const SizedBox(height: 20),
-                        buildTextField('CONFIRM PASSWORD', obscureText: true),
-                        const SizedBox(height: 40),
-                        buildSignInButton(),
-                      ],
+          Container(color: Colors.black.withOpacity(0.3)),
+
+          SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 60.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  const Text(
+                    'SIGN IN HERE',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFFF6C2A),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 40),
+
+                  buildTextField("Parent's Name", controller: parentNameController),
+                  const SizedBox(height: 30),
+
+                  buildTextField("Kid's Name", controller: kidNameController),
+                  const SizedBox(height: 30),
+
+                  buildTextField("Password", controller: passwordController, obscureText: true),
+                  const SizedBox(height: 30),
+
+                  buildTextField("Confirm Password", controller: confirmPasswordController, obscureText: true),
+                  const SizedBox(height: 40),
+
+                  // Signup Button
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFF6C2A),
+                      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      elevation: 5,
+                    ),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        if (passwordController.text != confirmPasswordController.text) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Passwords do not match")),
+                          );
+                          return;
+                        }
+
+                        // Simulate data submission
+                        print('Parent: ${parentNameController.text}');
+                        print('Kid: ${kidNameController.text}');
+                        print('Password: ${passwordController.text}');
+
+                        // Navigate to Login Page
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
+                      }
+                    },
+                    child: const Text(
+                      'SIGNIN',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -74,47 +105,24 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 
-  Widget buildTextField(String labelText, {bool obscureText = false}) {
-    return TextField(
+  // Reusable text field builder
+  Widget buildTextField(String label,
+      {required TextEditingController controller, bool obscureText = false}) {
+    return TextFormField(
+      controller: controller,
       obscureText: obscureText,
+      validator: (value) =>
+      value == null || value.isEmpty ? 'Please enter $label' : null,
       decoration: InputDecoration(
-        labelText: labelText,
-        labelStyle: const TextStyle(
-          color: Color(0xFFFFD700),
-          fontWeight: FontWeight.bold,
-        ),
+        labelText: label,
+        labelStyle: const TextStyle(color: Colors.yellow),
         enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFFFFD700), width: 2),
-          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.yellow),
+          borderRadius: BorderRadius.circular(10),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFFFFA500), width: 2),
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-    );
-  }
-
-  Widget buildSignInButton() {
-    return ElevatedButton(
-      onPressed: () {
-        // Handle sign in logic
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFFF7B1C),
-        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        elevation: 8,
-        shadowColor: Colors.black,
-      ),
-      child: const Text(
-        'SIGNIN',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-          color: Colors.black,
+          borderSide: const BorderSide(color: Colors.yellow),
+          borderRadius: BorderRadius.circular(10),
         ),
       ),
     );
