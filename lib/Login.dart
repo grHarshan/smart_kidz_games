@@ -24,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           // Background image
           Image.asset(
-            'assets/Images/background.png',
+            'assets/images/backgroundSL.png',
             fit: BoxFit.cover,
           ),
           Container(color: Colors.black.withOpacity(0.3)),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login.dart'; // Make sure you have login.dart in the same folder
+import 'Login.dart'; // Make sure you have Login.dart in the same folder
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -25,7 +25,7 @@ class _SignupState extends State<Signup> {
         children: [
           // Background image
           Image.asset(
-            'assets/Images/background.png',
+            'assets/images/backgroundSL.png',
             fit: BoxFit.cover,
           ),
           Container(color: Colors.black.withOpacity(0.3)),
