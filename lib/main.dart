@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
+import 'start_page.dart';
 
 void main() => runApp(KidsGameApp());
 
@@ -10,7 +10,7 @@ class KidsGameApp extends StatelessWidget {
       title: 'Kids Games',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'ComicSans'),
-      home: HomePage(),
+      home: StartPage(),
     );
   }
 }

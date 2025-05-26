@@ -20,7 +20,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     {'title': 'Game 4', 'color': Colors.pinkAccent[100], 'page': Game4()},
     {'title': 'Game 5', 'color': Colors.lightGreenAccent[100], 'page': Game5()},
     {'title': 'Game 6', 'color': Colors.orange[200], 'page': Game6()},
-    {'title': 'Game 7', 'color': const Color.fromARGB(255, 208, 211, 14), 'page': Game7()},
+    {
+      'title': 'Game 7',
+      'color': const Color.fromARGB(255, 208, 211, 14),
+      'page': Game7()
+    },
   ];
 
   late List<AnimationController> _controllers;
