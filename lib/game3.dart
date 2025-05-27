@@ -1,6 +1,9 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
+// Import your SimpleAppBar widget
+import 'app_bar.dart';
+
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -97,7 +100,7 @@ class Game3VictoryScreen extends StatelessWidget {
   }
 }
 
-/// Main Game 3 Screen
+/// Main Game 3 Screen with SimpleAppBar
 class Game3Main extends StatefulWidget {
   @override
   _Game3MainState createState() => _Game3MainState();
@@ -207,12 +210,37 @@ class _Game3MainState extends State<Game3Main> {
     );
   }
 
+  // Home button handler for SimpleAppBar
+  void _onHomePressed() {
+    Navigator.popUntil(context, (route) => route.isFirst);
+  }
+
+  // Profile button handler for SimpleAppBar
+  void _onProfilePressed() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('Profile'),
+        content: Text('User profile information here.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Game 3 - Level $level"),
-        backgroundColor: const Color.fromARGB(255, 146, 220, 241),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60),
+        child: SimpleAppBar(
+          onHomePressed: _onHomePressed,
+          onProfilePressed: _onProfilePressed,
+        ),
       ),
       body: Stack(
         children: [
@@ -272,8 +300,8 @@ class _Game3MainState extends State<Game3Main> {
                         onPressed: _checkAnswer,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 15),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                         ),
                         child: Text("✅ Done", style: TextStyle(fontSize: 20)),
                       ),
@@ -282,8 +310,8 @@ class _Game3MainState extends State<Game3Main> {
                         onPressed: _clearInput,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orange,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 15),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                         ),
                         child: Text("🔄 Clear", style: TextStyle(fontSize: 20)),
                       ),

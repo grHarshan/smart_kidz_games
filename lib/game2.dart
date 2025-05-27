@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:flutter/material.dart';
+import 'app_bar.dart'; // Import the reusable app bar
 
 class Game2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StartScreen(); 
+    return StartScreen();
   }
 }
 
@@ -72,9 +73,7 @@ class _NumberGameScreenState extends State<NumberGameScreen> {
     dropped = {};
   }
 
-  bool checkCompletion() {
-    return dropped.length == boxesToFill;
-  }
+  bool checkCompletion() => dropped.length == boxesToFill;
 
   void nextLevel() {
     setState(() {
@@ -103,78 +102,110 @@ class _NumberGameScreenState extends State<NumberGameScreen> {
             ),
           ),
           Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(hint,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 150,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: numbers.map((number) {
-                        return DragTarget<int>(
-                          onAccept: (receivedNumber) {
-                            if (receivedNumber == number) {
-                              setState(() {
-                                dropped[number] = true;
-                                if (checkCompletion()) {
-                                  if (currentLevel < 3) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: Text("Well Done!"),
-                                        content: Text(
-                                            "You completed level $currentLevel successfully."),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                              nextLevel();
-                                            },
-                                            child: Text("Next Level"),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  } else {
-                                    nextLevel();
-                                  }
-                                }
-                              });
-                            }
-                          },
-                          builder: (context, candidateData, rejectedData) {
-                            return NumberBox(
-                              number: dropped[number] == true ? number : null,
-                              isTarget: true,
-                            );
-                          },
-                        );
-                      }).toList(),
+              SimpleAppBar(
+                onHomePressed: () {
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                },
+                onProfilePressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text("Profile"),
+                      content: Text("User profile details go here."),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text("Close"),
+                        )
+                      ],
                     ),
+                  );
+                },
+              ),
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(hint,
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 150,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: numbers.map((number) {
+                                return DragTarget<int>(
+                                  onAccept: (receivedNumber) {
+                                    if (receivedNumber == number) {
+                                      setState(() {
+                                        dropped[number] = true;
+                                        if (checkCompletion()) {
+                                          if (currentLevel < 3) {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  AlertDialog(
+                                                title: Text("Well Done!"),
+                                                content: Text(
+                                                    "You completed level $currentLevel successfully."),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                      nextLevel();
+                                                    },
+                                                    child: Text("Next Level"),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          } else {
+                                            nextLevel();
+                                          }
+                                        }
+                                      });
+                                    }
+                                  },
+                                  builder: (context, candidateData,
+                                          rejectedData) =>
+                                      NumberBox(
+                                          number:
+                                              dropped[number] == true ? number : null,
+                                          isTarget: true),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                          SizedBox(width: 50),
+                          Container(
+                            width: 150,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: draggableNumbers.map((number) {
+                                return Draggable<int>(
+                                  data: number,
+                                  child: dropped[number] == true
+                                      ? SizedBox.shrink()
+                                      : NumberBox(number: number),
+                                  feedback: NumberBox(
+                                      number: number, isDragging: true),
+                                  childWhenDragging: SizedBox.shrink(),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  SizedBox(width: 50),
-                  Container(
-                    width: 150,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: draggableNumbers.map((number) {
-                        return Draggable<int>(
-                          data: number,
-                          child: dropped[number] == true
-                              ? SizedBox.shrink()
-                              : NumberBox(number: number),
-                          feedback: NumberBox(number: number, isDragging: true),
-                          childWhenDragging: SizedBox.shrink(),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ],
           ),
