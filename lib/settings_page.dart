@@ -11,14 +11,15 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  bool isMusicEnabled = true;
-  int selectedTrack = 1;
   final AudioController _audioController = AudioController();
+  late bool isMusicEnabled;
+  late int selectedTrack;
 
   @override
   void initState() {
     super.initState();
-    _audioController.play(selectedTrack); // Start music by default
+    isMusicEnabled = _audioController.isMusicEnabled;
+    selectedTrack = _audioController.currentTrack;
   }
 
   @override
@@ -34,9 +35,7 @@ class _SettingsPageState extends State<SettingsPage> {
             SwitchListTile(
               title: const Text("Dark Mode"),
               value: themeNotifier.isDarkMode,
-              onChanged: (val) {
-                themeNotifier.toggleTheme;
-              },
+              onChanged: (val) => themeNotifier.toggleTheme(val),
             ),
             SwitchListTile(
               title: const Text("Background Music"),
@@ -45,11 +44,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 setState(() {
                   isMusicEnabled = val;
                 });
-                if (val) {
-                  _audioController.play(selectedTrack);
-                } else {
-                  _audioController.stop();
-                }
+                _audioController.setMusicEnabled(val);
               },
             ),
             const SizedBox(height: 20),
@@ -61,9 +56,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   setState(() {
                     selectedTrack = val;
                   });
-                  if (isMusicEnabled) {
-                    _audioController.play(selectedTrack);
-                  }
+                  _audioController.play(selectedTrack);
                 }
               },
               items: [1, 2, 3]

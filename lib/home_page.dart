@@ -10,6 +10,7 @@ import 'game6.dart';
 import 'game7.dart';
 import 'settings_page.dart';
 import 'theme_notifier.dart';
+import 'audio_controller.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -35,20 +36,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late List<Animation<Offset>> _animations;
   List<bool> _hovering = [];
 
+  final AudioController _audioController = AudioController();
+
   @override
   void initState() {
     super.initState();
     _controllers = List.generate(
       games.length,
       (index) => AnimationController(
-        duration: Duration(milliseconds: 600),
+        duration: const Duration(milliseconds: 600),
         vsync: this,
       ),
     );
 
     _animations = _controllers
         .map((controller) => Tween<Offset>(
-              begin: Offset(0, 0.6),
+              begin: const Offset(0, 0.6),
               end: Offset.zero,
             ).animate(CurvedAnimation(
               parent: controller,
@@ -63,6 +66,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         _controllers[i].forward();
       });
     }
+
+    // Start background music once
+    _audioController.play(1);
   }
 
   @override
@@ -99,19 +105,49 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
           ),
 
-          // Dark Overlay (low opacity black screen)
+          // Dark Overlay
           if (isDark)
             Container(
               color: Colors.black.withOpacity(0.5),
             ),
 
-          // Main Content
+          // Top-right settings icon
+          // Settings Icon in bottom right
+          Positioned(
+            bottom: 24,
+            right: 24,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SettingsPage()),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.blueAccent,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 6,
+                      offset: const Offset(2, 4),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(12),
+                child:
+                    const Icon(Icons.settings, color: Colors.white, size: 30),
+              ),
+            ),
+          ),
+
+          // Game Buttons
           Center(
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Game Buttons
                   ...List.generate(games.length, (index) {
                     final game = games[index];
                     return SlideTransition(
@@ -169,34 +205,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       ),
                     );
                   }),
-
-                  const SizedBox(height: 40),
-
-                  // Settings Button
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueAccent,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const SettingsPage()),
-                      );
-                    },
-                    child: const Text(
-                      "Settings",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontFamily: 'ComicSans',
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
