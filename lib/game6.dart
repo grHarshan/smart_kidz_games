@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'app_bar.dart'; 
 
 class Game6 extends StatefulWidget {
   @override
@@ -115,7 +116,15 @@ class _Game6State extends State<Game6> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(title: Text("Word Guess Game")),
+        appBar: 
+              SimpleAppBar(
+    onHomePressed: () {
+      Navigator.popUntil(context, (route) => route.isFirst);
+    },
+    onProfilePressed: () {
+      Navigator.pushNamed(context, '/profile');
+    },
+  ),
         body: Container(
           decoration: BoxDecoration(
             image: DecorationImage(

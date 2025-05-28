@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'app_bar.dart'; 
 
 class Game1 extends StatelessWidget {
   const Game1({super.key});
@@ -10,6 +11,7 @@ class Game1 extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
+          
           // Background image
           Positioned.fill(
             child: Image.asset(
@@ -475,10 +477,16 @@ class _AlphabetGameMainState extends State<AlphabetGameMain> with SingleTickerPr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Learn to Write: ${alphabet[currentIndex].letter}"),
-        backgroundColor: Color.fromARGB(255, 86, 145, 255),
-      ),
+      appBar: 
+              SimpleAppBar(
+    onHomePressed: () {
+      Navigator.popUntil(context, (route) => route.isFirst);
+    },
+    onProfilePressed: () {
+      Navigator.pushNamed(context, '/profile');
+    },
+  ),
+
       body: Stack(
         children: [
           // Background image

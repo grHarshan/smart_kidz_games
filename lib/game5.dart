@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'app_bar.dart'; 
 
 class Game5 extends StatefulWidget {
   const Game5({Key? key}) : super(key: key);
@@ -145,6 +146,15 @@ class _PepperSortingGameState extends State<Game5> {
     }
 
     return Scaffold(
+      
+        appBar:SimpleAppBar(
+    onHomePressed: () {
+      Navigator.popUntil(context, (route) => route.isFirst);
+    },
+    onProfilePressed: () {
+      Navigator.pushNamed(context, '/profile');
+    },
+  ),
       body: Stack(
         children: [
           _buildBackground(),

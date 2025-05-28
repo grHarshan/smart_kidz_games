@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'dart:math' as math;
+import 'app_bar.dart'; 
 
 class Game4 extends StatelessWidget {
   const Game4({Key? key}) : super(key: key);
@@ -137,14 +138,14 @@ class _ShapeColorGameState extends State<ShapeColorGame> {
         MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Game 4 - Level $currentLevel'),
-        backgroundColor: const Color.fromARGB(255, 255, 251, 146),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
+      appBar: SimpleAppBar(
+    onHomePressed: () {
+      Navigator.popUntil(context, (route) => route.isFirst);
+    },
+    onProfilePressed: () {
+      Navigator.pushNamed(context, '/profile');
+    },
+  ),
       body: Stack(
         children: [
           SizedBox.expand(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'app_bar.dart'; 
 
 class Game7 extends StatefulWidget {
   @override
@@ -28,10 +29,15 @@ class _Game7State extends State<Game7> {
     final targetBoxHeight = (screenHeight * 0.3).clamp(150.0, 250.0);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Game 7"),
-        backgroundColor: Color(0xFFD0D30E),
-      ),
+      appBar: 
+              SimpleAppBar(
+    onHomePressed: () {
+      Navigator.popUntil(context, (route) => route.isFirst);
+    },
+    onProfilePressed: () {
+      Navigator.pushNamed(context, '/profile');
+    },
+  ),
       body: Stack(
         children: [
           Positioned.fill(

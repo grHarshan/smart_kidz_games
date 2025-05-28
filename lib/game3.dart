@@ -1,7 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-
-// Import your SimpleAppBar widget
 import 'app_bar.dart';
 
 void main() {
@@ -18,6 +16,7 @@ class Game3 extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
+          
           Positioned.fill(
             child: Image.asset(
               "assets/images/background.png",
@@ -210,37 +209,20 @@ class _Game3MainState extends State<Game3Main> {
     );
   }
 
-  // Home button handler for SimpleAppBar
-  void _onHomePressed() {
-    Navigator.popUntil(context, (route) => route.isFirst);
-  }
-
-  // Profile button handler for SimpleAppBar
-  void _onProfilePressed() {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text('Profile'),
-        content: Text('User profile information here.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
         child: SimpleAppBar(
-          onHomePressed: _onHomePressed,
-          onProfilePressed: _onProfilePressed,
-        ),
+    onHomePressed: () {
+      Navigator.popUntil(context, (route) => route.isFirst);
+    },
+    onProfilePressed: () {
+      Navigator.pushNamed(context, '/profile');
+    },
+  ),
       ),
       body: Stack(
         children: [

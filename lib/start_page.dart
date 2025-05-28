@@ -14,18 +14,26 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
   late AnimationController _logoController;
   late AnimationController _loadingController;
   late Animation<double> _logoScaleAnimation;
-  late Animation<double> _logoFadeAnimation;
   Timer? _navigationTimer;
 
   @override
   void initState() {
     super.initState();
 
-    // Logo animation controller
+    // Logo animation controller with repeat
     _logoController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 1500),
       vsync: this,
-    );
+    )..repeat(reverse: true); // Repeating zoom in and out
+
+    // Logo scale animation
+    _logoScaleAnimation = Tween<double>(
+      begin: 0.9,
+      end: 1.1,
+    ).animate(CurvedAnimation(
+      parent: _logoController,
+      curve: Curves.easeInOut,
+    ));
 
     // Loading spinner controller
     _loadingController = AnimationController(
@@ -33,28 +41,7 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
       vsync: this,
     )..repeat();
 
-    // Logo scale animation (zoom in effect)
-    _logoScaleAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _logoController,
-      curve: Curves.elasticOut,
-    ));
-
-    // Logo fade animation
-    _logoFadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _logoController,
-      curve: const Interval(0.0, 0.8, curve: Curves.easeIn),
-    ));
-
-    // Start logo animation
-    _logoController.forward();
-
-    // Start 10-second timer for navigation
+    // Navigation after 5 seconds
     _navigationTimer = Timer(const Duration(seconds: 5), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
@@ -80,67 +67,55 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
         height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/H1.png'), //  background image
+            image: AssetImage('assets/images/H1.png'),
             fit: BoxFit.cover,
           ),
         ),
         child: Stack(
           children: [
-            // Main content centered
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Logo with animations
+                  // Logo with repeating zoom animation
                   AnimatedBuilder(
-                    animation: _logoController,
+                    animation: _logoScaleAnimation,
                     builder: (context, child) {
                       return Transform.scale(
                         scale: _logoScaleAnimation.value,
-                        child: Opacity(
-                          opacity: _logoFadeAnimation.value,
-                          child: Container(
-                            width: 200,
-                            height: 200,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              // boxShadow: [
-                              // BoxShadow(
-                              // color: Colors.black.withOpacity(0.2),
-                              // blurRadius: 15,
-                              // offset: const Offset(0, 8),
-                              // ),
-                              // ],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Image.asset(
-                                'assets/images/logo.png', // Your logo
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) {
-                                  // Fallback if logo doesn't load
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(20),
-                                      border: Border.all(
-                                        color: Colors.orange.shade400,
-                                        width: 3,
+                        child: Container(
+                          width: 300,
+                          height: 300,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.asset(
+                              'assets/images/logo.png',
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: Colors.orange.shade400,
+                                      width: 3,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'LOGO',
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.orange.shade600,
                                       ),
                                     ),
-                                    child: Center(
-                                      child: Text(
-                                        'LOGO',
-                                        style: TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.orange.shade600,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ),
@@ -150,7 +125,7 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
 
                   const SizedBox(height: 80),
 
-                  // Loading indicator with pulse and rotation
+                  // Animated rotating and pulsing loading indicator
                   AnimatedBuilder(
                     animation: _loadingController,
                     builder: (context, child) {
@@ -183,7 +158,6 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
                             ),
                             child: Stack(
                               children: [
-                                // Outer ring
                                 Container(
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
@@ -193,7 +167,6 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
                                     ),
                                   ),
                                 ),
-                                // Inner dot
                                 Center(
                                   child: Container(
                                     width: 16,
@@ -211,7 +184,6 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
                                     ),
                                   ),
                                 ),
-                                // Spinning arc
                                 Positioned.fill(
                                   child: Transform.rotate(
                                     angle:
@@ -231,7 +203,7 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
 
                   const SizedBox(height: 25),
 
-                  // Loading text with fade animation
+                  // Animated loading text
                   AnimatedBuilder(
                     animation: _loadingController,
                     builder: (context, child) {
@@ -241,9 +213,7 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
                                 0.3),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 8,
-                          ),
+                              horizontal: 20, vertical: 8),
                           decoration: BoxDecoration(
                             color: Colors.black.withOpacity(0.3),
                             borderRadius: BorderRadius.circular(20),
@@ -265,7 +235,7 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
               ),
             ),
 
-            // Floating particles effect (optional)
+            // Floating particles effect
             ...List.generate(6, (index) {
               return AnimatedBuilder(
                 animation: _loadingController,
@@ -274,10 +244,10 @@ class _StartPageState extends State<StartPage> with TickerProviderStateMixin {
                       (index * math.pi / 3);
                   return Positioned(
                     left: MediaQuery.of(context).size.width / 2 +
-                        math.cos(offset) * (80 + index * 10) -
+                            math.cos(offset) * (80 + index * 10) -
                         4,
                     top: MediaQuery.of(context).size.height / 2 +
-                        math.sin(offset) * (80 + index * 10) -
+                            math.sin(offset) * (80 + index * 10) -
                         4,
                     child: Container(
                       width: 8,

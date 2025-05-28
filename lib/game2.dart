@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'app_bar.dart'; // Import the reusable app bar
+import 'app_bar.dart'; 
 
 class Game2 extends StatelessWidget {
   @override
@@ -56,7 +56,6 @@ class _NumberGameScreenState extends State<NumberGameScreen> {
     }
 
     List<int> selected = generatedSet.toList();
-
     int patternType = Random().nextInt(2);
     switch (patternType) {
       case 0:
@@ -103,26 +102,21 @@ class _NumberGameScreenState extends State<NumberGameScreen> {
           ),
           Column(
             children: [
+
+
               SimpleAppBar(
-                onHomePressed: () {
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                },
-                onProfilePressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text("Profile"),
-                      content: Text("User profile details go here."),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text("Close"),
-                        )
-                      ],
-                    ),
-                  );
-                },
-              ),
+    onHomePressed: () {
+      Navigator.popUntil(context, (route) => route.isFirst);
+    },
+    onProfilePressed: () {
+      Navigator.pushNamed(context, '/profile');
+    },
+  ),
+
+
+
+
+
               Expanded(
                 child: Center(
                   child: Column(
