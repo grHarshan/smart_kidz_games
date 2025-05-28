@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'game1.dart';
 import 'game2.dart';
 import 'game3.dart';
@@ -6,6 +8,8 @@ import 'game4.dart';
 import 'game5.dart';
 import 'game6.dart';
 import 'game7.dart';
+import 'settings_page.dart';
+import 'theme_notifier.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -48,7 +52,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               end: Offset.zero,
             ).animate(CurvedAnimation(
               parent: controller,
-              curve: Curves.elasticOut, // More playful
+              curve: Curves.elasticOut,
             )))
         .toList();
 
@@ -80,70 +84,82 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<ThemeNotifier>(context).isDarkMode;
+
     return Scaffold(
       body: Stack(
         children: [
           // Background Image
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/H1.png'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          // Game Buttons
+
+          // Dark Overlay (low opacity black screen)
+          if (isDark)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+            ),
+
+          // Main Content
           Center(
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(games.length, (index) {
-                  final game = games[index];
-                  return SlideTransition(
-                    position: _animations[index],
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      child: MouseRegion(
-                        onEnter: (_) {
-                          setState(() => _hovering[index] = true);
-                        },
-                        onExit: (_) {
-                          setState(() => _hovering[index] = false);
-                        },
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.of(context)
-                                .push(_createRoute(game['page']));
+                children: [
+                  // Game Buttons
+                  ...List.generate(games.length, (index) {
+                    final game = games[index];
+                    return SlideTransition(
+                      position: _animations[index],
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        child: MouseRegion(
+                          onEnter: (_) {
+                            setState(() => _hovering[index] = true);
                           },
-                          child: AnimatedScale(
-                            scale: _hovering[index] ? 1.08 : 1.0,
-                            duration: Duration(milliseconds: 200),
-                            curve: Curves.easeOut,
-                            child: AnimatedContainer(
-                              duration: Duration(milliseconds: 200),
-                              width: 260,
-                              height: 65,
-                              decoration: BoxDecoration(
-                                color: game['color'],
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: _hovering[index]
-                                        ? Colors.white.withOpacity(0.6)
-                                        : Colors.black26,
-                                    blurRadius: _hovering[index] ? 12 : 4,
-                                    offset: Offset(2, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Center(
-                                child: Text(
-                                  game['title'],
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                    fontFamily: 'ComicSans',
+                          onExit: (_) {
+                            setState(() => _hovering[index] = false);
+                          },
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context)
+                                  .push(_createRoute(game['page']));
+                            },
+                            child: AnimatedScale(
+                              scale: _hovering[index] ? 1.08 : 1.0,
+                              duration: const Duration(milliseconds: 200),
+                              curve: Curves.easeOut,
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                width: 260,
+                                height: 65,
+                                decoration: BoxDecoration(
+                                  color: game['color'],
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: _hovering[index]
+                                          ? Colors.white.withOpacity(0.6)
+                                          : Colors.black26,
+                                      blurRadius: _hovering[index] ? 12 : 4,
+                                      offset: const Offset(2, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    game['title'],
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                      fontFamily: 'ComicSans',
+                                    ),
                                   ),
                                 ),
                               ),
@@ -151,9 +167,37 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           ),
                         ),
                       ),
+                    );
+                  }),
+
+                  const SizedBox(height: 40),
+
+                  // Settings Button
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueAccent,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                  );
-                }),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SettingsPage()),
+                      );
+                    },
+                    child: const Text(
+                      "Settings",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'ComicSans',
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
