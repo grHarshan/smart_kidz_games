@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'game1.dart';
 import 'game2.dart';
 import 'game3.dart';
@@ -6,6 +8,9 @@ import 'game4.dart';
 import 'game5.dart';
 import 'game6.dart';
 import 'game7.dart';
+import 'settings_page.dart';
+import 'theme_notifier.dart';
+import 'audio_controller.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -31,24 +36,26 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late List<Animation<Offset>> _animations;
   List<bool> _hovering = [];
 
+  final AudioController _audioController = AudioController();
+
   @override
   void initState() {
     super.initState();
     _controllers = List.generate(
       games.length,
       (index) => AnimationController(
-        duration: Duration(milliseconds: 600),
+        duration: const Duration(milliseconds: 600),
         vsync: this,
       ),
     );
 
     _animations = _controllers
         .map((controller) => Tween<Offset>(
-              begin: Offset(0, 0.6),
+              begin: const Offset(0, 0.6),
               end: Offset.zero,
             ).animate(CurvedAnimation(
               parent: controller,
-              curve: Curves.elasticOut, // More playful
+              curve: Curves.elasticOut,
             )))
         .toList();
 
@@ -59,6 +66,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         _controllers[i].forward();
       });
     }
+
+    // Start background music once
+    _audioController.play(1);
   }
 
   @override
@@ -80,70 +90,112 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<ThemeNotifier>(context).isDarkMode;
+
     return Scaffold(
       body: Stack(
         children: [
           // Background Image
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/H1.png'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
+
+          // Dark Overlay
+          if (isDark)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+            ),
+
+          // Top-right settings icon
+          // Settings Icon in bottom right
+          Positioned(
+            bottom: 24,
+            right: 24,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SettingsPage()),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.blueAccent,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 6,
+                      offset: const Offset(2, 4),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(12),
+                child:
+                    const Icon(Icons.settings, color: Colors.white, size: 30),
+              ),
+            ),
+          ),
+
           // Game Buttons
           Center(
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(games.length, (index) {
-                  final game = games[index];
-                  return SlideTransition(
-                    position: _animations[index],
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      child: MouseRegion(
-                        onEnter: (_) {
-                          setState(() => _hovering[index] = true);
-                        },
-                        onExit: (_) {
-                          setState(() => _hovering[index] = false);
-                        },
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.of(context)
-                                .push(_createRoute(game['page']));
+                children: [
+                  ...List.generate(games.length, (index) {
+                    final game = games[index];
+                    return SlideTransition(
+                      position: _animations[index],
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        child: MouseRegion(
+                          onEnter: (_) {
+                            setState(() => _hovering[index] = true);
                           },
-                          child: AnimatedScale(
-                            scale: _hovering[index] ? 1.08 : 1.0,
-                            duration: Duration(milliseconds: 200),
-                            curve: Curves.easeOut,
-                            child: AnimatedContainer(
-                              duration: Duration(milliseconds: 200),
-                              width: 260,
-                              height: 65,
-                              decoration: BoxDecoration(
-                                color: game['color'],
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: _hovering[index]
-                                        ? Colors.white.withOpacity(0.6)
-                                        : Colors.black26,
-                                    blurRadius: _hovering[index] ? 12 : 4,
-                                    offset: Offset(2, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Center(
-                                child: Text(
-                                  game['title'],
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                    fontFamily: 'ComicSans',
+                          onExit: (_) {
+                            setState(() => _hovering[index] = false);
+                          },
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context)
+                                  .push(_createRoute(game['page']));
+                            },
+                            child: AnimatedScale(
+                              scale: _hovering[index] ? 1.08 : 1.0,
+                              duration: const Duration(milliseconds: 200),
+                              curve: Curves.easeOut,
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                width: 260,
+                                height: 65,
+                                decoration: BoxDecoration(
+                                  color: game['color'],
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: _hovering[index]
+                                          ? Colors.white.withOpacity(0.6)
+                                          : Colors.black26,
+                                      blurRadius: _hovering[index] ? 12 : 4,
+                                      offset: const Offset(2, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    game['title'],
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                      fontFamily: 'ComicSans',
+                                    ),
                                   ),
                                 ),
                               ),
@@ -151,9 +203,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           ),
                         ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  }),
+                ],
               ),
             ),
           ),
