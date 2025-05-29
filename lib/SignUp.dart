@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'Login.dart'; // Make sure you have Login.dart in the same folder
+import 'Login.dart';
+import 'profile.dart';
+ // Make sure you have Login.dart in the same folder
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -83,8 +85,14 @@ class _SignupState extends State<Signup> {
                         // Navigate to Login Page
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
-                        );
+                          MaterialPageRoute(
+                            builder: (context) => ProfilePage(
+                              parentName: parentNameController.text,
+                              kidName: kidNameController.text,
+                          ),
+                          
+                        ),
+                      );
                       }
                     },
                     child: const Text(

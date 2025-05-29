@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 
+
 class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onHomePressed;
   final VoidCallback? onProfilePressed;
+  //final String parentName;  
+  //final String kidName;
 
   const SimpleAppBar({
     Key? key,
     this.onHomePressed,
     this.onProfilePressed,
+    //required this.parentName, 
+    //required this.kidName,
   }) : super(key: key);
 
   @override
@@ -49,7 +54,19 @@ class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
             // Profile button
             IconButton(
               icon: const Icon(Icons.person, color: Colors.amber),
-              onPressed: onProfilePressed,
+              onPressed:onProfilePressed
+              /*
+              {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfilePage(
+                      parentName: parentName,
+                      kidName: kidName,
+                    ),
+                  ),
+                );
+              },*/
             ),
           ],
         ),
