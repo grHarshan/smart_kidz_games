@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'theme_notifier.dart';
 import 'audio_controller.dart';
 
@@ -14,12 +16,29 @@ class _SettingsPageState extends State<SettingsPage> {
   final AudioController _audioController = AudioController();
   late bool isMusicEnabled;
   late int selectedTrack;
+  bool startWithSignup = false;
 
   @override
   void initState() {
     super.initState();
     isMusicEnabled = _audioController.isMusicEnabled;
     selectedTrack = _audioController.currentTrack;
+    _loadStartWithSignup();
+  }
+
+  Future<void> _loadStartWithSignup() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      startWithSignup = prefs.getBool('startWithSignup') ?? false;
+    });
+  }
+
+  Future<void> _setStartWithSignup(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('startWithSignup', value);
+    setState(() {
+      startWithSignup = value;
+    });
   }
 
   @override
@@ -66,6 +85,22 @@ class _SettingsPageState extends State<SettingsPage> {
                       ))
                   .toList(),
             ),
+            const SizedBox(height: 30),
+            SwitchListTile(
+  title: const Text("Start with Sign Up Page"),
+  value: startWithSignup,
+  onChanged: (val) => _setStartWithSignup(val),
+),
+const Padding(
+  padding: EdgeInsets.only(left: 16.0),
+  child: Align(
+    alignment: Alignment.centerLeft,
+    child: Text(
+      "Recommend to active login a parent's permission for this kids game app",
+      style: TextStyle(fontSize: 12, color: Colors.grey),
+    ),
+  ),
+),
           ],
         ),
       ),

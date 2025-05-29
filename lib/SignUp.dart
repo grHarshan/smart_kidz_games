@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'Login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'profile.dart';
- // Make sure you have Login.dart in the same folder
+import 'Login.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -11,13 +11,19 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-  // Controllers for each input
+  final _formKey = GlobalKey<FormState>();
+
   final TextEditingController parentNameController = TextEditingController();
   final TextEditingController kidNameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
-  final _formKey = GlobalKey<FormState>(); // Key for form validation
+  Future<void> _saveUserDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('parentName', parentNameController.text.trim());
+    await prefs.setString('kidName', kidNameController.text.trim());
+    await prefs.setString('password', passwordController.text.trim());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +31,8 @@ class _SignupState extends State<Signup> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background image
-          Image.asset(
-            'assets/images/backgroundSL.png',
-            fit: BoxFit.cover,
-          ),
+          Image.asset('assets/images/backgroundSL.png', fit: BoxFit.cover),
           Container(color: Colors.black.withOpacity(0.3)),
-
           SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 60.0),
             child: Form(
@@ -39,7 +40,7 @@ class _SignupState extends State<Signup> {
               child: Column(
                 children: [
                   const Text(
-                    'SIGN IN HERE',
+                    'SIGN UP HERE',
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
@@ -60,7 +61,6 @@ class _SignupState extends State<Signup> {
                   buildTextField("Confirm Password", controller: confirmPasswordController, obscureText: true),
                   const SizedBox(height: 40),
 
-                  // Signup Button
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFF6C2A),
@@ -68,7 +68,7 @@ class _SignupState extends State<Signup> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       elevation: 5,
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         if (passwordController.text != confirmPasswordController.text) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -77,32 +77,43 @@ class _SignupState extends State<Signup> {
                           return;
                         }
 
-                        // Simulate data submission
-                        print('Parent: ${parentNameController.text}');
-                        print('Kid: ${kidNameController.text}');
-                        print('Password: ${passwordController.text}');
+                        await _saveUserDetails();
 
-                        // Navigate to Login Page
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => ProfilePage(
-                              parentName: parentNameController.text,
-                              kidName: kidNameController.text,
-                          ),
-                          
-                        ),
-                      );
+                          MaterialPageRoute(builder: (context) => const ProfilePage()),
+                        );
                       }
                     },
                     child: const Text(
-                      'SIGNIN',
+                      'SIGN UP',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Already signed up?", style: TextStyle(color: Colors.white)),
+                      TextButton(
+                        onPressed: () { Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => const LoginPage()),
+                          );
+                        },
+                        child: const Text(
+                          "Login",
+                          style: TextStyle(
+                            color: Color(0xFFFF6C2A),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -113,14 +124,12 @@ class _SignupState extends State<Signup> {
     );
   }
 
-  // Reusable text field builder
   Widget buildTextField(String label,
       {required TextEditingController controller, bool obscureText = false}) {
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
-      validator: (value) =>
-      value == null || value.isEmpty ? 'Please enter $label' : null,
+      validator: (value) => value == null || value.isEmpty ? 'Please enter $label' : null,
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(color: Colors.yellow),
@@ -133,6 +142,7 @@ class _SignupState extends State<Signup> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
+      style: const TextStyle(color: Colors.yellow),
     );
   }
 }

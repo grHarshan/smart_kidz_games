@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mad_game/profile.dart';
 
 
 class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -37,7 +38,7 @@ class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
           children: [
             
             IconButton(
-              icon: const Icon(Icons.home, color: Colors.amber),
+              icon: const Icon(Icons.home, color: Color.fromARGB(255, 227, 187, 64)),
               onPressed: onHomePressed,
             ),
 
@@ -51,23 +52,18 @@ class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
 
-            // Profile button
             IconButton(
-              icon: const Icon(Icons.person, color: Colors.amber),
-              onPressed:onProfilePressed
-              /*
-              {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ProfilePage(
-                      parentName: parentName,
-                      kidName: kidName,
-                    ),
-                  ),
-                );
-              },*/
-            ),
+  icon: const Icon(Icons.person, color: Color.fromARGB(255, 227, 187, 64)),
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProfilePage(),
+      ),
+    );
+  },
+),
+
           ],
         ),
       ),

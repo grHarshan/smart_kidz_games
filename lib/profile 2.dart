@@ -1,33 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-void main() {
-  
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-  
-  runApp(MyApp());
-}
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ThinkiTots Profile',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        fontFamily: 'Roboto', 
-      ),
-      home: ProfilePage(), 
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
 
 class ProfilePage extends StatefulWidget {
   @override
