@@ -34,13 +34,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   late List<AnimationController> _controllers;
   late List<Animation<Offset>> _animations;
+  late AnimationController _settingsController;
+  late Animation<Offset> _settingsAnimation;
+
   List<bool> _hovering = [];
+  bool _hoveringSettings = false;
 
   final AudioController _audioController = AudioController();
 
   @override
   void initState() {
     super.initState();
+
     _controllers = List.generate(
       games.length,
       (index) => AnimationController(
@@ -67,7 +72,25 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       });
     }
 
-    // Start background music once
+    // Initialize settings icon animation
+    _settingsController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _settingsAnimation = Tween<Offset>(
+      begin: const Offset(1.5, 0.5),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _settingsController,
+      curve: Curves.elasticOut,
+    ));
+
+    Future.delayed(Duration(milliseconds: 100 * games.length), () {
+      _settingsController.forward();
+    });
+
+    // Start background music
     _audioController.play(1);
   }
 
@@ -76,6 +99,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     for (var controller in _controllers) {
       controller.dispose();
     }
+    _settingsController.dispose();
     super.dispose();
   }
 
@@ -111,33 +135,44 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               color: Colors.black.withOpacity(0.5),
             ),
 
-          // Top-right settings icon
-          // Settings Icon in bottom right
+          // Settings Icon with Animation
           Positioned(
             bottom: 24,
             right: 24,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const SettingsPage()),
-                );
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.blueAccent,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 6,
-                      offset: const Offset(2, 4),
+            child: MouseRegion(
+              onEnter: (_) => setState(() => _hoveringSettings = true),
+              onExit: (_) => setState(() => _hoveringSettings = false),
+              child: SlideTransition(
+                position: _settingsAnimation,
+                child: AnimatedScale(
+                  scale: _hoveringSettings ? 1.1 : 1.0,
+                  duration: const Duration(milliseconds: 200),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const SettingsPage()),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.blueAccent,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 6,
+                            offset: const Offset(2, 4),
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(12),
+                      child: const Icon(Icons.settings,
+                          color: Colors.white, size: 30),
                     ),
-                  ],
+                  ),
                 ),
-                padding: const EdgeInsets.all(12),
-                child:
-                    const Icon(Icons.settings, color: Colors.white, size: 30),
               ),
             ),
           ),

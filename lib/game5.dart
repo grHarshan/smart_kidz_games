@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'app_bar.dart'; 
+import 'package:flutter/scheduler.dart';
+import 'app_bar.dart';
 
 class Game5 extends StatefulWidget {
   const Game5({Key? key}) : super(key: key);
@@ -10,42 +11,53 @@ class Game5 extends StatefulWidget {
   State<Game5> createState() => _PepperSortingGameState();
 }
 
+<<<<<<< HEAD
 class _PepperSortingGameState extends State<Game5> {
   //Store Game data - variables
+=======
+class _PepperSortingGameState extends State<Game5>
+    with SingleTickerProviderStateMixin {
+>>>>>>> d8054dc1377d07ab036f9b3fd2b1797f1e67bed9
   final List<Pepper> _peppers = [];
+  late Ticker _ticker;
   int _score = 0;
-  Timer? _gameTimer;
-  Timer? _countdownTimer;
-  int _timeLeft = 180; // 3 minutes
+  int _timeLeft = 180;
   bool _gameStarted = false;
   int _correctMatches = 0;
   int _wrongMatches = 0;
-
   int _bigBasketCount = 0;
   int _smallBasketCount = 0;
+  Timer? _countdownTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _ticker = createTicker((_) {
+      _updatePepperPositions();
+    });
+  }
 
   @override
   void dispose() {
-    _gameTimer?.cancel();
+    _ticker.dispose();
     _countdownTimer?.cancel();
     super.dispose();
   }
 
   void _startGame() {
     setState(() {
-      _gameStarted = true;
       _score = 0;
+      _timeLeft = 180;
+      _gameStarted = true;
       _correctMatches = 0;
       _wrongMatches = 0;
       _bigBasketCount = 0;
       _smallBasketCount = 0;
       _peppers.clear();
-      _timeLeft = 180;
     });
 
-    _gameTimer = Timer.periodic(const Duration(seconds: 4), (_) {
-      _addNewPepper();
-    });
+    _ticker.start();
+    _addNewPepperPeriodically();
 
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
@@ -57,10 +69,19 @@ class _PepperSortingGameState extends State<Game5> {
     });
   }
 
-  void _endGame() {
-    _gameTimer?.cancel();
-    _countdownTimer?.cancel();
+  void _addNewPepperPeriodically() {
+    Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (!_gameStarted) {
+        timer.cancel();
+        return;
+      }
+      if (_peppers.length < 8) _addNewPepper();
+    });
+  }
 
+  void _endGame() {
+    _ticker.stop();
+    _countdownTimer?.cancel();
     setState(() {
       _gameStarted = false;
     });
@@ -68,21 +89,19 @@ class _PepperSortingGameState extends State<Game5> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
+      builder: (_) => AlertDialog(
         title: const Text('Game Over'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Final Score: $_score'),
-            Text('Correct Matches: $_correctMatches'),
-            Text('Wrong Matches: $_wrongMatches'),
+            Text('Score: $_score'),
+            Text('Correct: $_correctMatches'),
+            Text('Wrong: $_wrongMatches'),
           ],
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+            onPressed: () => Navigator.of(context).pop(),
             child: const Text('OK'),
           ),
         ],
@@ -90,6 +109,7 @@ class _PepperSortingGameState extends State<Game5> {
     );
   }
 
+<<<<<<< HEAD
   void _addNewPepper() {   //adding new peppers
     if (_peppers.length >= 8) return;
 
@@ -97,12 +117,16 @@ class _PepperSortingGameState extends State<Game5> {
     final isBig = random.nextBool();
     final initialX = random.nextDouble() * 0.8 + 0.1;
 
+=======
+  void _addNewPepper() {
+    final rand = Random();
+>>>>>>> d8054dc1377d07ab036f9b3fd2b1797f1e67bed9
     setState(() {
       _peppers.add(
         Pepper(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          isBig: isBig,
-          xPosition: initialX,
+          id: UniqueKey().toString(),
+          isBig: rand.nextBool(),
+          xPosition: rand.nextDouble() * 0.8 + 0.1,
           yPosition: 0.0,
         ),
       );
@@ -112,104 +136,105 @@ class _PepperSortingGameState extends State<Game5> {
   void _updatePepperPositions() { //update the pepper positions
     setState(() {
       for (int i = _peppers.length - 1; i >= 0; i--) {
+<<<<<<< HEAD
         final pepper = _peppers[i];
         pepper.yPosition += 0.005; // Adjust the speed as needed
         if (pepper.yPosition > 1.0) {
+=======
+        final p = _peppers[i];
+        p.yPosition += 0.003;
+        if (p.yPosition > 1.0) {
+>>>>>>> d8054dc1377d07ab036f9b3fd2b1797f1e67bed9
           _peppers.removeAt(i);
-          _score -= 5;
+          if (_gameStarted) {
+            _score -= 5; // Penalty if missed
+          }
         }
       }
     });
   }
 
-  void _checkBoxDrop(Pepper pepper, bool boxIsBig) {
+  void _checkDrop(Pepper pepper, bool boxIsBig) {
+    if (!_peppers.contains(pepper)) return;
     setState(() {
       _peppers.remove(pepper);
       if ((pepper.isBig && boxIsBig) || (!pepper.isBig && !boxIsBig)) {
-        _score += 10;
+        _score += 5;
         _correctMatches++;
-        if (boxIsBig) {
-          _bigBasketCount++;
-        } else {
-          _smallBasketCount++;
-        }
+        boxIsBig ? _bigBasketCount++ : _smallBasketCount++;
       } else {
         _score -= 5;
         _wrongMatches++;
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Oops! Try matching the correct pepper size."),
+          duration: Duration(seconds: 2),
+        ));
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_gameStarted) {
-      Future.delayed(const Duration(milliseconds: 50), _updatePepperPositions);
-    }
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      
-        appBar:SimpleAppBar(
-    onHomePressed: () {
-      Navigator.popUntil(context, (route) => route.isFirst);
-    },
-    onProfilePressed: () {
-      Navigator.pushNamed(context, '/profile');
-    },
-  ),
+      appBar: SimpleAppBar(
+        onHomePressed: () {
+          Navigator.popUntil(context, (route) => route.isFirst);
+        },
+        onProfilePressed: () {
+          Navigator.pushNamed(context, '/profile');
+        },
+      ),
       body: Stack(
         children: [
           _buildBackground(),
-          Positioned(left: 20, top: 100, child: _buildCloud(100, 60)),
-          Positioned(right: 40, top: 150, child: _buildCloud(120, 70)),
-          Positioned(left: 150, top: 200, child: _buildCloud(90, 50)),
-          Positioned(left: 50, bottom: 200, child: _buildTree()),
-          Positioned(
-            top: 20,
-            left: 20,
-            child: InkWell(
-              onTap: () {
-                if (_gameStarted) {
-                  _endGame();
-                }
-              },
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: const BoxDecoration(
-                  color: Colors.yellow,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.arrow_back, color: Colors.black),
+          if (!_gameStarted) _buildStartOverlay(),
+          ..._peppers.map((pepper) {
+            return Positioned(
+              left: pepper.xPosition * size.width - 30,
+              top: pepper.yPosition * (size.height - 140),
+              child: Draggable<Pepper>(
+                data: pepper,
+                feedback: _buildPepperImage(pepper.isBig),
+                childWhenDragging: const SizedBox(),
+                onDragEnd: (details) {
+                  final dx = details.offset.dx;
+                  final dy = details.offset.dy;
+                  if (dy > size.height - 160) {
+                    _checkDrop(pepper, dx < size.width / 2);
+                  }
+                },
+                child: _buildPepperImage(pepper.isBig),
               ),
-            ),
-          ),
+            );
+          }),
           Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: 140,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildBasket(true, _bigBasketCount),
-                _buildBasket(false, _smallBasketCount),
-              ],
-            ),
-          ),
+  bottom: 60, // Move baskets up by 40 pixels
+  left: 0,
+  right: 0,
+  child: Row(
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    crossAxisAlignment: CrossAxisAlignment.end, // Ensure even bottom alignment
+    children: [
+      _buildBasket(true, _bigBasketCount),
+      _buildBasket(false, _smallBasketCount),
+    ],
+  ),
+),
+
           Positioned(
-            top: 20,
-            right: 20,
+            top: 16,
+            right: 16,
             child: Column(
               children: [
-                _buildScoreBox('Score: $_score'),
+                _buildInfoBox("Score: $_score"),
                 const SizedBox(height: 10),
                 if (_gameStarted)
-                  _buildScoreBox('Time: ${_formatTime(_timeLeft)}'),
+                  _buildInfoBox("Time: ${_formatTime(_timeLeft)}"),
               ],
             ),
           ),
-          ..._buildPeppers(),
-          if (!_gameStarted) _buildStartScreen(),
         ],
       ),
     );
@@ -217,43 +242,35 @@ class _PepperSortingGameState extends State<Game5> {
 
   Widget _buildBackground() {
     return Positioned.fill(
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF40E0D0), Color(0xFFB0E57C)],
-            stops: [0.6, 0.6],
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            'assets/images/background.png',
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => Container(color: Colors.lightBlue),
           ),
-        ),
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color.fromARGB(100, 135, 206, 250),
+                  Color.fromARGB(100, 152, 251, 152),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildScoreBox(String text) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.7),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
-  String _formatTime(int seconds) {
-    final minutes = seconds ~/ 60;
-    final secs = seconds % 60;
-    return '$minutes:${secs.toString().padLeft(2, '0')}';
-  }
-
-  Widget _buildStartScreen() {
+  Widget _buildStartOverlay() {
     return Positioned.fill(
       child: Container(
-        color: Colors.black.withOpacity(0.7),
+        color: Colors.black.withOpacity(0.6),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -262,35 +279,37 @@ class _PepperSortingGameState extends State<Game5> {
                 'Pepper Jump',
                 style: TextStyle(
                     fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               const Text(
-                'Let’s play and learn!',
+                'Sort the peppers!\nDrag big ones to the left basket and small ones to the right!',
+                textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: _startGame,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: Colors.orange,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                 ),
-                child: const Text('Start Game', style: TextStyle(fontSize: 20)),
+                child:
+                    const Text('Start Game', style: TextStyle(fontSize: 20)),
               ),
-              if (_correctMatches > 0 || _wrongMatches > 0)
+              if (_correctMatches + _wrongMatches > 0)
                 Padding(
-                  padding: const EdgeInsets.only(top: 30),
+                  padding: const EdgeInsets.only(top: 20),
                   child: Column(
                     children: [
-                      Text('Correct matches: $_correctMatches',
+                      Text('Correct Matches: $_correctMatches',
                           style: const TextStyle(
-                              color: Colors.green, fontSize: 18)),
-                      Text('Wrong matches: $_wrongMatches',
-                          style:
-                              const TextStyle(color: Colors.red, fontSize: 18)),
+                              color: Colors.green, fontSize: 16)),
+                      Text('Wrong Matches: $_wrongMatches',
+                          style: const TextStyle(
+                              color: Colors.red, fontSize: 16)),
                     ],
                   ),
                 ),
@@ -301,100 +320,19 @@ class _PepperSortingGameState extends State<Game5> {
     );
   }
 
-  Widget _buildCloud(double width, double height) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(30),
-      ),
-    );
-  }
-
-  Widget _buildTree() {
-    return Column(
-      children: [
-        Container(
-          width: 100,
-          height: 120,
-          decoration: BoxDecoration(
-            color: Colors.green.shade300,
-            borderRadius: BorderRadius.circular(50),
-          ),
-        ),
-        Container(
-          width: 20,
-          height: 40,
-          color: Colors.brown,
-        ),
-      ],
-    );
-  }
-
-  List<Widget> _buildPeppers() {
-    final List<Widget> pepperWidgets = [];
-    final size = MediaQuery.of(context).size;
-
-    for (final pepper in _peppers) {
-      pepperWidgets.add(
-        Positioned(
-          left: pepper.xPosition * size.width - 30,
-          top: pepper.yPosition * (size.height - 120),
-          child: Draggable<Pepper>(
-            data: pepper,
-            feedback: _buildPepperImage(pepper.isBig),
-            childWhenDragging: const SizedBox(),
-            onDragEnd: (details) {
-              final dx = details.offset.dx;
-              final dy = details.offset.dy;
-              final basketY = size.height - 100;
-
-              if (dy > basketY) {
-                if (dx < size.width / 2) {
-                  _checkBoxDrop(pepper, true);
-                } else {
-                  _checkBoxDrop(pepper, false);
-                }
-              }
-            },
-            child: _buildPepperImage(pepper.isBig),
-          ),
-        ),
-      );
-    }
-
-    return pepperWidgets;
-  }
-
   Widget _buildPepperImage(bool isBig) {
     return Image.asset(
       'assets/images/pepper.jpg',
-      width: isBig ? 60 : 40,
-      height: isBig ? 60 : 40,
-      errorBuilder: (context, error, stackTrace) {
-        return Container(
-          width: isBig ? 60 : 40,
-          height: isBig ? 60 : 40,
-          decoration: BoxDecoration(
-            color: Colors.red,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Center(
-            child: Container(
-              width: 10,
-              height: 20,
-              decoration: const BoxDecoration(
-                color: Colors.green,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(5),
-                  topRight: Radius.circular(5),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
+      width: isBig ? 70 : 50,
+      height: isBig ? 70 : 50,
+      errorBuilder: (_, __, ___) => Container(
+        width: isBig ? 70 : 50,
+        height: isBig ? 70 : 50,
+        decoration: BoxDecoration(
+          color: Colors.red,
+          shape: BoxShape.circle,
+        ),
+      ),
     );
   }
 
@@ -402,32 +340,43 @@ class _PepperSortingGameState extends State<Game5> {
     return Column(
       children: [
         DragTarget<Pepper>(
-          builder: (context, candidateData, rejectedData) {
-            return Container(
-              width: isBig ? 100 : 75,
-              height: isBig ? 100 : 75,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Image.asset(
-                'assets/images/Basket.jpg',
-                fit: BoxFit.contain,
-              ),
+          onAccept: (pepper) => _checkDrop(pepper, isBig),
+          builder: (_, __, ___) {
+            return SizedBox(
+              width: isBig ? 120 : 90,
+              height: isBig ? 120 : 90,
+              child: Image.asset('assets/images/Basket.jpg',
+                  fit: BoxFit.contain),
             );
           },
-          onAccept: (pepper) => _checkBoxDrop(pepper, isBig),
         ),
         const SizedBox(height: 5),
         Text(
-          'Pepper Count: $count',
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+          'Count: $count',
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ],
     );
+  }
+
+  Widget _buildInfoBox(String text) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.85),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  String _formatTime(int seconds) {
+    final m = seconds ~/ 60;
+    final s = seconds % 60;
+    return '$m:${s.toString().padLeft(2, '0')}';
   }
 }
 
