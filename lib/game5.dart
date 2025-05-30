@@ -11,13 +11,8 @@ class Game5 extends StatefulWidget {
   State<Game5> createState() => _PepperSortingGameState();
 }
 
-<<<<<<< HEAD
-class _PepperSortingGameState extends State<Game5> {
-  //Store Game data - variables
-=======
 class _PepperSortingGameState extends State<Game5>
     with SingleTickerProviderStateMixin {
->>>>>>> d8054dc1377d07ab036f9b3fd2b1797f1e67bed9
   final List<Pepper> _peppers = [];
   late Ticker _ticker;
   int _score = 0;
@@ -79,6 +74,54 @@ class _PepperSortingGameState extends State<Game5>
     });
   }
 
+  void _addNewPepper() {
+    final rand = Random();
+    setState(() {
+      _peppers.add(
+        Pepper(
+          id: UniqueKey().toString(),
+          isBig: rand.nextBool(),
+          xPosition: rand.nextDouble() * 0.8 + 0.1,
+          yPosition: 0.0,
+        ),
+      );
+    });
+  }
+
+  void _updatePepperPositions() {
+    setState(() {
+      for (int i = _peppers.length - 1; i >= 0; i--) {
+        final p = _peppers[i];
+        p.yPosition += 0.005;
+        if (p.yPosition > 1.0) {
+          _peppers.removeAt(i);
+          if (_gameStarted) {
+            _score -= 5;
+          }
+        }
+      }
+    });
+  }
+
+  void _checkDrop(Pepper pepper, bool boxIsBig) {
+    if (!_peppers.contains(pepper)) return;
+    setState(() {
+      _peppers.remove(pepper);
+      if ((pepper.isBig && boxIsBig) || (!pepper.isBig && !boxIsBig)) {
+        _score += 10;
+        _correctMatches++;
+        boxIsBig ? _bigBasketCount++ : _smallBasketCount++;
+      } else {
+        _score -= 5;
+        _wrongMatches++;
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Oops! Try matching the correct pepper size."),
+          duration: Duration(seconds: 2),
+        ));
+      }
+    });
+  }
+
   void _endGame() {
     _ticker.stop();
     _countdownTimer?.cancel();
@@ -107,70 +150,6 @@ class _PepperSortingGameState extends State<Game5>
         ],
       ),
     );
-  }
-
-<<<<<<< HEAD
-  void _addNewPepper() {   //adding new peppers
-    if (_peppers.length >= 8) return;
-
-    final random = Random();
-    final isBig = random.nextBool();
-    final initialX = random.nextDouble() * 0.8 + 0.1;
-
-=======
-  void _addNewPepper() {
-    final rand = Random();
->>>>>>> d8054dc1377d07ab036f9b3fd2b1797f1e67bed9
-    setState(() {
-      _peppers.add(
-        Pepper(
-          id: UniqueKey().toString(),
-          isBig: rand.nextBool(),
-          xPosition: rand.nextDouble() * 0.8 + 0.1,
-          yPosition: 0.0,
-        ),
-      );
-    });
-  }
-
-  void _updatePepperPositions() { //update the pepper positions
-    setState(() {
-      for (int i = _peppers.length - 1; i >= 0; i--) {
-<<<<<<< HEAD
-        final pepper = _peppers[i];
-        pepper.yPosition += 0.005; // Adjust the speed as needed
-        if (pepper.yPosition > 1.0) {
-=======
-        final p = _peppers[i];
-        p.yPosition += 0.003;
-        if (p.yPosition > 1.0) {
->>>>>>> d8054dc1377d07ab036f9b3fd2b1797f1e67bed9
-          _peppers.removeAt(i);
-          if (_gameStarted) {
-            _score -= 5; // Penalty if missed
-          }
-        }
-      }
-    });
-  }
-
-  void _checkDrop(Pepper pepper, bool boxIsBig) {
-    if (!_peppers.contains(pepper)) return;
-    setState(() {
-      _peppers.remove(pepper);
-      if ((pepper.isBig && boxIsBig) || (!pepper.isBig && !boxIsBig)) {
-        _score += 5;
-        _correctMatches++;
-        boxIsBig ? _bigBasketCount++ : _smallBasketCount++;
-      } else {
-        _score -= 5;
-        _wrongMatches++;
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Oops! Try matching the correct pepper size."),
-          duration: Duration(seconds: 2),
-        ));
-      }
-    });
   }
 
   @override
@@ -210,19 +189,18 @@ class _PepperSortingGameState extends State<Game5>
             );
           }),
           Positioned(
-  bottom: 60, // Move baskets up by 40 pixels
-  left: 0,
-  right: 0,
-  child: Row(
-    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    crossAxisAlignment: CrossAxisAlignment.end, // Ensure even bottom alignment
-    children: [
-      _buildBasket(true, _bigBasketCount),
-      _buildBasket(false, _smallBasketCount),
-    ],
-  ),
-),
-
+            bottom: 60,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                _buildBasket(true, _bigBasketCount),
+                _buildBasket(false, _smallBasketCount),
+              ],
+            ),
+          ),
           Positioned(
             top: 16,
             right: 16,
@@ -351,35 +329,31 @@ class _PepperSortingGameState extends State<Game5>
           },
         ),
         const SizedBox(height: 5),
-        Text(
-          'Count: $count',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+        Text('Count: $count',
+            style: const TextStyle(color: Colors.white, fontSize: 14)),
       ],
     );
   }
 
   Widget _buildInfoBox(String text) {
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.85),
+        color: Colors.black.withOpacity(0.5),
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Text(
-        text,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-      ),
+      child: Text(text, style: const TextStyle(color: Colors.white)),
     );
   }
 
   String _formatTime(int seconds) {
-    final m = seconds ~/ 60;
-    final s = seconds % 60;
-    return '$m:${s.toString().padLeft(2, '0')}';
+    final minutes = seconds ~/ 60;
+    final secs = seconds % 60;
+    return '$minutes:${secs.toString().padLeft(2, '0')}';
   }
 }
 
+// Pepper class
 class Pepper {
   final String id;
   final bool isBig;
