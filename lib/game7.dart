@@ -19,7 +19,7 @@ class _Game7State extends State<Game7> {
   @override
   Widget build(BuildContext context) {
     List<String> allLetters = [...vowels, ...consonants]..shuffle();
-    allLetters = allLetters.take(10).toList();
+    allLetters = allLetters.take(10).toList();  //10 random letters
 
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
@@ -217,7 +217,7 @@ class _Game7State extends State<Game7> {
           ),
         );
       },
-      onAccept: (receivedLetter) {
+      onAccept: (receivedLetter) { //check the vowel or constant
         setState(() {
           if (validLetters.contains(receivedLetter)) {
             if (isVowelBox && !correctVowels.contains(receivedLetter)) {

@@ -11,6 +11,7 @@ class Game5 extends StatefulWidget {
 }
 
 class _PepperSortingGameState extends State<Game5> {
+  //Store Game data - variables
   final List<Pepper> _peppers = [];
   int _score = 0;
   Timer? _gameTimer;
@@ -89,7 +90,7 @@ class _PepperSortingGameState extends State<Game5> {
     );
   }
 
-  void _addNewPepper() {
+  void _addNewPepper() {   //adding new peppers
     if (_peppers.length >= 8) return;
 
     final random = Random();
@@ -108,11 +109,11 @@ class _PepperSortingGameState extends State<Game5> {
     });
   }
 
-  void _updatePepperPositions() {
+  void _updatePepperPositions() { //update the pepper positions
     setState(() {
       for (int i = _peppers.length - 1; i >= 0; i--) {
         final pepper = _peppers[i];
-        pepper.yPosition += 0.005;
+        pepper.yPosition += 0.005; // Adjust the speed as needed
         if (pepper.yPosition > 1.0) {
           _peppers.removeAt(i);
           _score -= 5;
